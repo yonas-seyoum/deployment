@@ -1,0 +1,250 @@
+"use client";
+
+import ResumeAnalysis from "@/components/resume/resume-analysis";
+import { ResumeEditor } from "@/components/resume/resume-editor";
+import ResumePreview from "@/components/resume/resume-preview";
+import ResumeSkeleton from "@/components/resume/skeleton/resume-skeleton";
+import ResumeOptimizer from "@/components/resume/resume.optimizer";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ArrowLeft } from "lucide-react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { CoverLetter } from "@/components/cover-letter/cover-letter";
+import dynamic from "next/dynamic";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { resumeApi } from "@/app/api/resume";
+import { TemplatePreview, templates } from "@/components/resume/templates";
+import { TemplateType } from "@/components/resume/templates/types";
+import { useResumeManager } from "@/context/ResumeManagerProvider";
+
+export default function Home() {
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const id = params.id as string;
+
+  const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState("resume");
+  const { resumeData } = useResumeManager();
+
+  const handleBack = () => {
+    router.push("/dashboard/seeker/create-resume");
+  };
+
+  const handleTabChange = (tab: string) => {
+    router.replace(`/dashboard/seeker/create-resume/${id}?mode=${tab}`);
+  };
+
+  const DownloadResumeButton = dynamic(
+    () => import("@/components/resume/DownloadResume"),
+    { ssr: false }
+  );
+
+  const isResumeLoading = false;
+
+  // const { data: resumeData, isLoading: isResumeLoading } = useQuery({
+  //   queryKey: ["resumes"],
+  //   queryFn: resumeApi.getResumes,
+  //   select: (data) => data.find((res) => res.id === id),
+  // });
+
+  const changeTemplate = useMutation({
+    mutationFn: ({ id, template }: { id: string; template: string }) =>
+      resumeApi.changeTemplate(id, template),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["resumes"] });
+      setActiveTab("resume");
+      router.replace(`/dashboard/seeker/create-resume/${id}?mode=resume`);
+    },
+  });
+
+  useEffect(() => {
+    const tabFromQuery = searchParams.get("mode");
+    setActiveTab(tabFromQuery || "resume");
+  }, [id, searchParams]);
+
+  if (!resumeData || isResumeLoading) {
+    return <div>Loading...</div>;
+  }
+
+  const SelectedTemplate =
+    TemplatePreview[resumeData?.template as keyof typeof TemplatePreview] ??
+    TemplatePreview[TemplateType.SIMPLE];
+
+  return (
+    <div className="h-full">
+      <Tabs
+        value={activeTab}
+        onValueChange={handleTabChange}
+        className="flex flex-1 flex-col w-full h-full gap-0"
+      >
+        <header className="sticky top-0 z-40 border-border pt-0">
+          <div className="py-4 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full"
+                onClick={handleBack}
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <h1 className="text-2xl font-bold text-foreground flex items-center">
+                Resume Builder
+              </h1>
+              <TabsList className="grid grid-cols-5 w-fit mx-6 my-2">
+                <TabsTrigger value="resume">Resume Editor</TabsTrigger>
+                <TabsTrigger value="templates">Templates</TabsTrigger>
+                <TabsTrigger value="analysis">Analysis</TabsTrigger>
+                <TabsTrigger value="optimize">Job Matcher</TabsTrigger>
+                <TabsTrigger value="cover-letter">Cover Letter</TabsTrigger>
+              </TabsList>
+            </div>
+            {activeTab === "resume" && !isResumeLoading && (
+              <DownloadResumeButton resumeData={resumeData} />
+            )}
+          </div>
+        </header>
+
+        <TabsContent
+          value="resume"
+          className="space-y-6 overflow-hidden bg-muted rounded-md px-6 h-full"
+        >
+          <div className="grid grid-cols-[2fr_3fr] gap-x-4 h-full">
+            <div className="order-1 lg:order-1 h-full">
+              <ResumeEditor resumeData={resumeData} />
+            </div>
+
+            <div className="order-2 lg:order-2 lg:sticky lg:top-24 lg:h-full overflow-y-scroll hide-scroll">
+              {!isResumeLoading ? (
+                <div className="w-full h-full p-6 shadow-md bg-white rounded-md">
+                  <SelectedTemplate resumeData={resumeData} />
+                </div>
+              ) : (
+                <div className="w-full flex justify-center py-6">
+                  <ResumeSkeleton />
+                </div>
+              )}
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent
+          value="templates"
+          className="h-full bg-muted rounded-md px-6 overflow-hidden"
+        >
+          <div className="flex flex-col gap-8 h-full overflow-y-scroll hide-scroll">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {templates.map((template) => {
+                const isActive = resumeData.template === template.templateId;
+
+                return (
+                  <div
+                    key={template.templateId}
+                    className={`group rounded-xl overflow-hidden bg-background transition-all
+              ${isActive ? "shadow-md" : "border-border hover:shadow-lg"}
+            `}
+                  >
+                    <div className="relative h-[420px] bg-white overflow-hidden">
+                      <div className="h-full absolute inset-x-0 top-0 w-full bg-white shadow-md">
+                        <div className="h-full p-4 pointer-events-none">
+                          {template.component}
+                        </div>
+                      </div>
+
+                      {isActive && (
+                        <div className="absolute inset-0 ring-1 ring-primary pointer-events-none" />
+                      )}
+                    </div>
+
+                    <div className="p-4 bg-gradient-to-br from-blue-600 to-blue-500 text-white">
+                      <div className="flex flex-col gap-3">
+                        <div>
+                          <h3 className="text-sm font-semibold">
+                            {template.name}
+                          </h3>
+                          <p className="text-xs text-blue-100">
+                            {template.description}
+                          </p>
+                        </div>
+
+                        <button
+                          disabled={isActive}
+                          onClick={() =>
+                            changeTemplate.mutate({
+                              id: resumeData.id,
+                              template: template.templateId,
+                            })
+                          }
+                          className={`h-9 rounded-md text-sm font-medium transition
+                    ${
+                      isActive
+                        ? "bg-white/20 text-white cursor-default"
+                        : "bg-white text-blue-600 hover:bg-blue-50"
+                    }
+                  `}
+                        >
+                          {isActive ? "Selected" : "Apply Template"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent
+          value="analysis"
+          className="space-y-6 bg-muted overflow-hidden rounded-md px-6"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 h-full ">
+            <div className="py-0 px-4 bg-muted h-full  overflow-y-scroll hide-scroll">
+              {!isResumeLoading ? (
+                <div className="w-full h-full p-6 shadow-md bg-white rounded-md">
+                  <SelectedTemplate resumeData={resumeData} />
+                </div>
+              ) : (
+                <div className="w-full flex justify-center py-6">
+                  <ResumeSkeleton />
+                </div>
+              )}
+            </div>
+
+            <ResumeAnalysis />
+          </div>
+        </TabsContent>
+
+        <TabsContent
+          value="optimize"
+          className="space-y-6 bg-muted overflow-hidden rounded-md px-6"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-full ">
+            <div className="w-full py-0 bg-muted h-full  overflow-y-scroll hide-scroll">
+              {!isResumeLoading ? (
+                <div className="w-full h-full p-6 shadow-md bg-white rounded-md">
+                  <SelectedTemplate resumeData={resumeData} />
+                </div>
+              ) : (
+                <div className="w-full flex justify-center py-6">
+                  <ResumeSkeleton />
+                </div>
+              )}
+            </div>
+
+            <ResumeOptimizer />
+          </div>
+        </TabsContent>
+
+        <TabsContent
+          value="cover-letter"
+          className="h-full bg-muted overflow-hidden rounded-md"
+        >
+          <CoverLetter />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
