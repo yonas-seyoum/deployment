@@ -10,6 +10,7 @@ import axios from "axios";
 import JobCard from "@/components/job/job-card";
 import JobSkeleton from "@/components/job/skeleton/job-card-skeleton";
 import NoJobs from "@/components/job/no-job";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function Home() {
   const fetchSavedJobs = async (): Promise<Job[]> => {
@@ -45,9 +46,13 @@ export default function Home() {
     );
   };
 
+  const isMobile = useIsMobile();
+
   return (
     <main className="h-full flex-1 overflow-y-scroll hide-scroll">
-      <div className="py-6 px-6 space-y-4">
+      <div
+        className={`${!isMobile ? "py-6 space-y-4 px-6" : "py-6 space-y-4"}`}
+      >
         <div className="space-y-2">
           {user?.fullName ? (
             <h1 className="text-4xl font-bold tracking-tight text-foreground">
@@ -64,7 +69,7 @@ export default function Home() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
+          <Card className="bg-card!">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Active Applications
@@ -78,7 +83,7 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-card!">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Saved Jobs</CardTitle>
               <Bookmark className="h-4 w-4 text-muted-foreground" />
@@ -88,7 +93,7 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-card!">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Short Listed
@@ -110,9 +115,8 @@ export default function Home() {
             </h2>
             <Link href="/dashboard/seeker/saved-jobs">
               <Button
-                variant="outline"
                 size="sm"
-                className="flex items-center gap-1 hover:bg-accent/10"
+                className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 transition-colors"
               >
                 View All <ArrowUpRight className="w-4 h-4" />
               </Button>

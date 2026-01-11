@@ -24,31 +24,33 @@ export function AppHeader() {
   const isMobile = useIsMobile();
   if (!profile) return <AppHeaderSkeleton />;
   return (
-    <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 bg-white dark:bg-black border-b-0">
+    <header className="sticky top-0 flex h-16 shrink-0 items-center gap-2 bg-white dark:bg-black border-b-0">
       <div className="flex w-full items-center gap-2 px-4 lg:gap-4 lg:px-6">
-        <div className="flex items-center gap-3 ">
-          <Separator
-            orientation="vertical"
-            className="h-6 bg-primary/20"
-          />
-          <div className="flex items-center gap-2">
-            <SidebarTrigger>
-              <div className="h-8 w-8 rounded-lg bg-[#4d32fb] flex items-center justify-center">
-                <Briefcase className="h-5 w-5 text-white" />
-              </div>
-            </SidebarTrigger>
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold text-foreground leading-none">
-                CareerScaleUp
-              </span>
-              <span className="text-xs text-muted-foreground leading-none">
-                {profile?.role === Role.Seeker
-                  ? "Find Your Dream Job"
-                  : profile?.role === Role.Recruiter
-                  ? "Find Best Talents"
-                  : ""}
-              </span>
+        <div className="flex items-center w-1/2">
+          <Separator orientation="vertical" className="h-6 bg-primary/20" />
+          <div className="flex items-center gap-2 w-full ">
+            <div className="flex items-center justify-between">
+              <SidebarTrigger />
+              {isMobile && (
+                <span className="text-lg text-blue-600 font-bold leading-none">
+                  CareerScaleUp
+                </span>
+              )}
             </div>
+            {!isMobile && (
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold text-foreground leading-none">
+                  CareerScaleUp
+                </span>
+                <span className="text-xs text-muted-foreground leading-none">
+                  {profile?.role === Role.Seeker
+                    ? "Find Your Dream Job"
+                    : profile?.role === Role.Recruiter
+                    ? "Find Best Talents"
+                    : ""}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -57,20 +59,22 @@ export function AppHeader() {
         <div className="ml-auto flex items-center gap-2 lg:gap-3">
           <NotificationBell />
 
-          <Button
-            variant="ghost"
-            onClick={() => router.push(`${roleMap[profile.role]}/messages`)}
-          >
-            <MessageSquareIcon size={22} />
-            {!isMobile && <span>Messages</span>}
-          </Button>
+          {!isMobile && (
+            <Button
+              variant="ghost"
+              onClick={() => router.push(`${roleMap[profile.role]}/messages`)}
+            >
+              <MessageSquareIcon size={22} />
+              {!isMobile && <span>Messages</span>}
+            </Button>
+          )}
 
           <Separator
             orientation="vertical"
             className="h-6 bg-[hsl(var(--header-border))] hidden sm:block"
           />
 
-          <ThemeToggle />
+          {!isMobile && <ThemeToggle />}
 
           <Separator
             orientation="vertical"

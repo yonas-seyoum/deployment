@@ -1,6 +1,6 @@
 export default function EmptyChatState() {
   return (
-    <div className="flex flex-1 items-center justify-center ">
+    <div className="flex flex-1 items-center justify-center bg-[#1F2937] rounded-md">
       <div className="text-center max-w-sm">
         <div className="mb-4 text-muted-foreground">
           <svg

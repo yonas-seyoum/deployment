@@ -556,6 +556,7 @@ export interface JobManagerContextType {
   error: string | null;
 
   selectedJob: Job | null;
+  setSelectedJob: Dispatch<SetStateAction<Job | null>>;
   selectJob: (id: string) => void;
 
   saveJob: UseMutationResult<

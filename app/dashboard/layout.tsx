@@ -47,7 +47,7 @@ export default async function RootLayout({
         defaultOpen={false}
       >
         <AppSidebar variant="inset" />
-        <SidebarInset className="h-[100vh] w-[100vw] shadow-none! m-0! bg-white dark:bg-black rounded-none!">
+        <SidebarInset className="h-screen w-screen shadow-none! m-0! bg-white dark:bg-black rounded-none!">
           <AppHeader />
           <div className="@component/main overflow-hidden w-full  h-full">
             {children}

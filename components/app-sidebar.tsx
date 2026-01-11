@@ -105,7 +105,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <Link href={item.href}>
                     <SidebarMenuButton
                       isActive={item.href === pathname}
-                      className="py-2 font-bold"
+                      className={`py-2 font-bold ${
+                        !isCollapsed || isMobile ? "" : "flex items-center justify-center"
+                      }`}
                     >
                       {item.icon && (
                         <div className="text-foreground">
@@ -148,7 +150,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="bg-background">
+      <SidebarFooter className="bg-background dark">
         <NavUser user={profile} />
       </SidebarFooter>
     </Sidebar>

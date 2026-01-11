@@ -25,14 +25,16 @@ import { useState } from "react";
 import EasyApplyModal from "./easy-apply/easy-apply-modal";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import ResumePanel from "../resume/resume-panel";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface JobDetailProps {
   job: (Job & { source: "internal" | "external"; easyApplied: boolean }) | null;
-  onBack?: () => void;
 }
 
-export function JobDetail({ job, onBack }: JobDetailProps) {
-  const { saveJob } = useJobsManager();
+export function JobDetail({ job }: JobDetailProps) {
+  const { saveJob, setSelectedJob } = useJobsManager();
+  const isMobile = useIsMobile();
 
   const [open, setOpen] = useState<boolean>(false);
   const handleDialogState = () => setOpen((prev) => !prev);
@@ -42,36 +44,58 @@ export function JobDetail({ job, onBack }: JobDetailProps) {
     return res.data as User;
   };
 
+  const fetchSavedJobs = async () => {
+    const response = await axios.get("/api/job/saved");
+    return response.data as Job[];
+  };
+
   const { data: user } = useQuery({
     queryKey: ["profile"],
     queryFn: fetchProfile,
     staleTime: Infinity,
   });
 
+  const { data: savedJobs } = useQuery({
+    queryKey: ["savedJobs"],
+    queryFn: fetchSavedJobs,
+  });
+
   const jobIsApplied = (id: string) => {
-    const appliedJob = user?.seekerApplications?.find((job) => job.jobId === id);
+    const appliedJob = user?.seekerApplications?.find(
+      (job) => job.jobId === id
+    );
     return appliedJob ? true : false;
   };
 
-  if (!job) {
+  const jobIsSaved = (jobId: string) => {
+    return savedJobs?.find((job) => job.id === jobId) ? true : false;
+  };
+
+  const onBack = () => {
+    setSelectedJob(null);
+  };
+
+  if (!job || !savedJobs) {
     return <JobDetailsSkeleton />;
   }
 
   return (
-    <div className="flex-1">
-      <Card className="h-full rounded-lg border border-border max-h-screen overflow-y-scroll hide-scroll shadow-none">
-        <div className="p-6 space-y-6">
-          {onBack && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onBack}
-              className="md:hidden mb-2 gap-2"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back
-            </Button>
-          )}
+    <div className={`flex-1 rounded-md ${isMobile ? "" : "bg-card!"} `}>
+      <Card
+        className={`${
+          isMobile ? "border-none py-0 bg-none" : "bg-card!"
+        } h-full rounded-lg border border-border max-h-screen overflow-y-scroll hide-scroll shadow-none`}
+      >
+        <div className={`${isMobile ? "p-0" : "px-6"} space-y-6 `}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onBack}
+            className="md:hidden mb-2 gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </Button>
 
           <div className="space-y-4">
             <div className="flex items-start justify-between">
@@ -88,7 +112,11 @@ export function JobDetail({ job, onBack }: JobDetailProps) {
                 size="icon"
                 onClick={() => saveJob.mutate({ job, source: "external" })}
               >
-                <Bookmark className="w-5 h-5 fill-amber-400" />
+                <Bookmark
+                  className={`w-5 h-5 ${
+                    jobIsSaved(job.id) ? "fill-amber-400" : ""
+                  }`}
+                />
               </Button>
             </div>
 
@@ -107,22 +135,27 @@ export function JobDetail({ job, onBack }: JobDetailProps) {
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="w-4 h-4 text-muted-foreground" />
-                <span>
-                  {new Date(job.postedAt).toDateString()}
-                </span>
+                <span>{new Date(job.postedAt).toDateString()}</span>
               </div>
             </div>
 
             <div className="flex gap-2 pt-2">
               {job.source === "external" ? (
                 job.applicationLink ? (
-                  <a href={job.applicationLink} target="_blank" rel="noopener noreferrer">
-                  <Button className="bg-gradient-to-r from-blue-700 to-blue-500 hover:from-blue-800 hover:to-blue-600">
-                    Apply Now
-                  </Button>
-                </a>
+                  <a
+                    href={job.applicationLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button className="bg-gradient-to-r from-blue-700 to-blue-500 hover:from-blue-800 hover:to-blue-600">
+                      Apply Now
+                    </Button>
+                  </a>
                 ) : (
-                  <Button className="bg-gradient-to-r from-blue-700 to-blue-500 hover:from-blue-800 hover:to-blue-600" disabled>
+                  <Button
+                    className="bg-gradient-to-r from-blue-700 to-blue-500 hover:from-blue-800 hover:to-blue-600"
+                    disabled
+                  >
                     Apply Now
                   </Button>
                 )
@@ -139,90 +172,7 @@ export function JobDetail({ job, onBack }: JobDetailProps) {
           </div>
 
           <div className="md:hidden space-y-6">
-            <div className="flex flex-col items-center gap-4">
-              <div className="relative w-32 h-32">
-                <svg
-                  className="w-full h-full transform -rotate-90"
-                  viewBox="0 0 120 120"
-                >
-                  <circle
-                    cx="60"
-                    cy="60"
-                    r="54"
-                    fill="none"
-                    stroke="#e5e7eb"
-                    strokeWidth="8"
-                  />
-
-                  <circle
-                    cx="60"
-                    cy="60"
-                    r="54"
-                    fill="none"
-                    stroke="url(#gaugeGradient)"
-                    strokeWidth="8"
-                    strokeDasharray={`${(12 / 100) * 339.29} 339.29`}
-                    strokeLinecap="round"
-                  />
-                  <defs>
-                    <linearGradient
-                      id="gaugeGradient"
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="100%"
-                    >
-                      <stop offset="0%" stopColor="#ef4444" />
-                      <stop offset="50%" stopColor="#f59e0b" />
-                      <stop offset="100%" stopColor="#10b981" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-3xl font-bold">12%</span>
-                  <span className="text-xs text-muted-foreground">
-                    Match Score
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium">Hard Skills</span>
-                  <span className="text-xs text-muted-foreground">1 / 10</span>
-                </div>
-                <Progress value={10} className="h-2" />
-              </div>
-
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium">Soft Skills</span>
-                  <span className="text-xs text-muted-foreground">2 / 14</span>
-                </div>
-                <Progress value={14} className="h-2" />
-              </div>
-
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium">Other</span>
-                  <span className="text-xs text-muted-foreground">0 / 1</span>
-                </div>
-                <Progress value={0} className="h-2" />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Button className="w-full  text-white gap-2">
-                Increase Match Score
-                <ArrowUpRight className="w-4 h-4" />
-              </Button>
-              <Button variant="outline" className="w-full gap-2 bg-transparent">
-                <Bookmark className="w-4 h-4 fill-amber-400" />
-                Bookmark in Tracker
-              </Button>
-            </div>
+            <ResumePanel />
           </div>
 
           <div className="border-t border-border" />

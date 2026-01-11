@@ -91,7 +91,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const response = await axios.delete(`${BASE_URL}/jobs`, {
+    const response = await axios.delete(`${BASE_URL}/jobs/${jobId}`, {
       data: { jobId },
       headers: {
         "Content-Type": "application/json",

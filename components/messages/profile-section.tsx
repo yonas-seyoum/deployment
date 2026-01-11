@@ -15,7 +15,7 @@ export default function ProfileSection({
   if (!reciever) return null;
 
   return (
-    <div className="hidden lg:flex w-72 flex-col border-l border-border bg-card">
+    <div className="hidden lg:flex w-72 flex-col bg-card rounded-md">
       <div className="border-b px-6 py-6 flex flex-col items-center gap-4">
         <Avatar className="h-24 w-24">
           <AvatarImage

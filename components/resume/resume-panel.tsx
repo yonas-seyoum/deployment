@@ -10,11 +10,13 @@ import { AnalysisResponse } from "@/app/types";
 import { useQuery } from "@tanstack/react-query";
 import { resumeApi } from "@/app/api/resume";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function ResumePanel() {
   const router = useRouter();
   const { activeResume, resumeData } = useResumeManager();
   const { selectedJob } = useJobsManager();
+  const isMobile = useIsMobile();
 
   const { data, isPending, error } = useQuery({
     queryKey: ["analysis", activeResume?.id, selectedJob?.id],
@@ -63,7 +65,7 @@ export default function ResumePanel() {
   }
 
   return (
-    <div className="hidden h-full lg:flex flex-col w-80 bg-card rounded-lg border border-border overflow-y-auto">
+    <div className={`w-full ${isMobile ? "bg-none border-primary" : "bg-card"}`}>
       {activeResume ? (
         <div className="p-6 space-y-6">
           <div className="flex flex-col items-center gap-4">
@@ -150,7 +152,9 @@ export default function ResumePanel() {
                         className="flex items-center gap-2 text-gray-800"
                       >
                         <span className="text-red-500 font-bold">×</span>
-                        <span className="text-sm">{hardSkill}</span>
+                        <span className="text-sm text-primary">
+                          {hardSkill}
+                        </span>
                       </li>
                     ))}
                   </ul>

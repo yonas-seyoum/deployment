@@ -22,7 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {  IconTrash } from "@tabler/icons-react";
+import { IconTrash } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 
@@ -198,7 +198,7 @@ export default function JobsBoard() {
                               </>
                             ) : (
                               <>
-                                <CheckCircle className="text-green-500" />{" "}
+                                <CheckCircle className="text-green-500" />
                                 Reopen Job
                               </>
                             )}
@@ -215,7 +215,7 @@ export default function JobsBoard() {
 
                     <div>
                       <h3 className="font-semibold text-base mb-2">
-                        {job.title}
+                        {job.title}{" "}
                       </h3>
                       <div className="flex items-center gap-3 text-xs text-gray-600">
                         <span className="flex items-center gap-1">

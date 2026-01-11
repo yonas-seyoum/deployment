@@ -109,111 +109,117 @@ export default function Home() {
 
         <TabsContent
           value="resume"
-          className="space-y-6 overflow-hidden bg-muted rounded-md px-6 h-full"
+          className="overflow-hidden bg-muted rounded-md px-6 h-full py-6"
         >
-          <div className="grid grid-cols-[2fr_3fr] gap-x-4 h-full">
-            <div className="order-1 lg:order-1 h-full">
-              <ResumeEditor resumeData={resumeData} />
-            </div>
+          <div className="h-full overflow-y-scroll hide-scroll">
+            <div className="grid grid-cols-[2fr_3fr] gap-x-4 h-full">
+              <div className="order-1 lg:order-1 h-full">
+                <ResumeEditor resumeData={resumeData} />
+              </div>
 
-            <div className="order-2 lg:order-2 lg:sticky lg:top-24 lg:h-full overflow-y-scroll hide-scroll">
-              {!isResumeLoading ? (
-                <div className="w-full h-full p-6 shadow-md bg-white rounded-md">
-                  <SelectedTemplate resumeData={resumeData} />
-                </div>
-              ) : (
-                <div className="w-full flex justify-center py-6">
-                  <ResumeSkeleton />
-                </div>
-              )}
+              <div className="order-2 lg:order-2 lg:sticky lg:top-24 lg:h-full overflow-y-scroll hide-scroll">
+                {!isResumeLoading ? (
+                  <div className="w-full min-h-screen p-6 shadow-md bg-white rounded-md py-4">
+                    <SelectedTemplate resumeData={resumeData} />
+                  </div>
+                ) : (
+                  <div className="w-full flex justify-center py-6">
+                    <ResumeSkeleton />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </TabsContent>
 
         <TabsContent
           value="templates"
-          className="h-full bg-muted rounded-md px-6 overflow-hidden"
+          className="h-full bg-muted rounded-md overflow-hidden px-6 py-4"
         >
-          <div className="flex flex-col gap-8 h-full overflow-y-scroll hide-scroll">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {templates.map((template) => {
-                const isActive = resumeData.template === template.templateId;
+          <div className="h-full overflow-y-scroll hide-scroll">
+            <div className="flex flex-col gap-8 h-full overflow-y-scroll hide-scroll">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {templates.map((template) => {
+                  const isActive = resumeData.template === template.templateId;
 
-                return (
-                  <div
-                    key={template.templateId}
-                    className={`group rounded-xl overflow-hidden bg-background transition-all
+                  return (
+                    <div
+                      key={template.templateId}
+                      className={`group rounded-xl overflow-hidden bg-background transition-all
               ${isActive ? "shadow-md" : "border-border hover:shadow-lg"}
             `}
-                  >
-                    <div className="relative h-[420px] bg-white overflow-hidden">
-                      <div className="h-full absolute inset-x-0 top-0 w-full bg-white shadow-md">
-                        <div className="h-full p-4 pointer-events-none">
-                          {template.component}
+                    >
+                      <div className="relative h-[420px] bg-white overflow-hidden">
+                        <div className="h-full absolute inset-x-0 top-0 w-full bg-white shadow-md">
+                          <div className="h-full p-4 pointer-events-none">
+                            {template.component}
+                          </div>
                         </div>
+
+                        {isActive && (
+                          <div className="absolute inset-0 ring-1 ring-primary pointer-events-none" />
+                        )}
                       </div>
 
-                      {isActive && (
-                        <div className="absolute inset-0 ring-1 ring-primary pointer-events-none" />
-                      )}
-                    </div>
+                      <div className="p-4 bg-gradient-to-br from-blue-600 to-blue-500 text-white">
+                        <div className="flex flex-col gap-3">
+                          <div>
+                            <h3 className="text-sm font-semibold">
+                              {template.name}
+                            </h3>
+                            <p className="text-xs text-blue-100">
+                              {template.description}
+                            </p>
+                          </div>
 
-                    <div className="p-4 bg-gradient-to-br from-blue-600 to-blue-500 text-white">
-                      <div className="flex flex-col gap-3">
-                        <div>
-                          <h3 className="text-sm font-semibold">
-                            {template.name}
-                          </h3>
-                          <p className="text-xs text-blue-100">
-                            {template.description}
-                          </p>
-                        </div>
-
-                        <button
-                          disabled={isActive}
-                          onClick={() =>
-                            changeTemplate.mutate({
-                              id: resumeData.id,
-                              template: template.templateId,
-                            })
-                          }
-                          className={`h-9 rounded-md text-sm font-medium transition
+                          <button
+                            disabled={isActive}
+                            onClick={() =>
+                              changeTemplate.mutate({
+                                id: resumeData.id,
+                                template: template.templateId,
+                              })
+                            }
+                            className={`h-9 rounded-md text-sm font-medium transition
                     ${
                       isActive
                         ? "bg-white/20 text-white cursor-default"
                         : "bg-white text-blue-600 hover:bg-blue-50"
                     }
                   `}
-                        >
-                          {isActive ? "Selected" : "Apply Template"}
-                        </button>
+                          >
+                            {isActive ? "Selected" : "Apply Template"}
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
         </TabsContent>
 
         <TabsContent
           value="analysis"
-          className="space-y-6 bg-muted overflow-hidden rounded-md px-6"
+          className="overflow-hidden bg-muted rounded-md px-6 h-full py-6"
         >
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 h-full ">
-            <div className="py-0 px-4 bg-muted h-full  overflow-y-scroll hide-scroll">
-              {!isResumeLoading ? (
-                <div className="w-full h-full p-6 shadow-md bg-white rounded-md">
-                  <SelectedTemplate resumeData={resumeData} />
-                </div>
-              ) : (
-                <div className="w-full flex justify-center py-6">
-                  <ResumeSkeleton />
-                </div>
-              )}
-            </div>
+          <div className="h-full overflow-y-scroll hide-scroll">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full ">
+              <div className="py-0 bg-muted h-full  overflow-y-scroll hide-scroll">
+                {!isResumeLoading ? (
+                  <div className="w-full min-h-screen p-6 shadow-md bg-white rounded-md py-4">
+                    <SelectedTemplate resumeData={resumeData} />
+                  </div>
+                ) : (
+                  <div className="w-full flex justify-center py-6">
+                    <ResumeSkeleton />
+                  </div>
+                )}
+              </div>
 
-            <ResumeAnalysis />
+              <ResumeAnalysis />
+            </div>
           </div>
         </TabsContent>
 

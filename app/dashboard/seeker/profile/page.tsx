@@ -73,7 +73,7 @@ export default function Me() {
 
   if (isPending) {
     return (
-      <main className="h-full bg-muted py-8">
+      <main className="h-full bg-muted">
         <div className="h-full overflow-y-scroll hide-scroll">
           <ProfileSkeleton />;
         </div>
@@ -93,7 +93,7 @@ export default function Me() {
   );
 
   return (
-    <main className="h-full bg-white dark:bg-black py-8 ">
+    <main className="h-full bg-white dark:bg-black">
       <div className="h-full overflow-y-scroll hide-scroll">
         <Dialog>
           <div className="w-full h-full space-y-4">

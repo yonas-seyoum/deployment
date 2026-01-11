@@ -4,6 +4,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Job, JobManagerContextType } from "@/app/types";
 import { jobApi } from "@/app/api/job";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { is } from "zod/v4/locales";
 
 export const JobsManagerContext = createContext<
   JobManagerContextType | undefined
@@ -24,6 +26,7 @@ export default function JobsManagerProvider({
 }) {
   const queryClient = useQueryClient();
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const isMobile = useIsMobile();
 
   const {
     data: jobsData,
@@ -32,7 +35,6 @@ export default function JobsManagerProvider({
   } = useQuery({
     queryKey: ["jobs"],
     queryFn: jobApi.fetchJobs,
-    staleTime: 1000 * 60 * 5,
   });
 
   const searchJobsMutation = useMutation({
@@ -46,7 +48,11 @@ export default function JobsManagerProvider({
 
     onSuccess: (data) => {
       queryClient.setQueryData(["jobs"], data);
-      setSelectedJob(data.jobs[0] || null);
+      if (!isMobile) {
+        setSelectedJob(null);
+      } else {
+        setSelectedJob(null);
+      }
     },
 
     onError: (err) => {
@@ -71,10 +77,16 @@ export default function JobsManagerProvider({
       job: Job;
       source: "external" | "internal";
     }) => jobApi.saveJob(newJob, source),
+
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["jobs"] }),
   });
 
   useEffect(() => {
-    setSelectedJob(jobsData?.jobs[0] || null);
+    if (!isMobile) {
+      setSelectedJob(jobsData?.jobs[0] || null);
+    } else {
+      setSelectedJob(null);
+    }
   }, [jobsData]);
 
   return (
@@ -84,6 +96,7 @@ export default function JobsManagerProvider({
         loading,
         error: error ? (error as Error).message : null,
         selectedJob,
+        setSelectedJob,
         selectJob,
         saveJob,
         searchJobs,

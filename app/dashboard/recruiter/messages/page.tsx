@@ -53,7 +53,7 @@ export default function Messages() {
   }
 
   return (
-    <div className="flex h-full overflow-hidden bg-background rounded-lg shadow-md">
+    <div className="flex gap-4 h-full overflow-hidden">
       <RoomList
         rooms={rooms}
         profile={profile}

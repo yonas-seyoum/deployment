@@ -12,11 +12,13 @@ import { resumeApi } from "@/app/api/resume";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CoverLetterApi from "@/app/api/cover-letter";
 import CoverLetterCard from "@/components/cover-letter/cover-letter-card";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function CreateResumePage() {
   const router = useRouter();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("resumes");
+  const isMobile = useIsMobile();
 
   const handleCreateNew = () => setShowCreateModal(true);
   const handleCreateNewCoverLetter = () => {
@@ -24,7 +26,7 @@ export default function CreateResumePage() {
   };
   const handleOpenResume = (id: string) => {
     if (id) {
-    router.push(`/dashboard/seeker/create-resume/${id}`);
+      router.push(`/dashboard/seeker/create-resume/${id}`);
     }
   };
 
@@ -47,7 +49,11 @@ export default function CreateResumePage() {
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
-      <div className="flex flex-col h-full space-y-4 bg-muted px-4 pt-4">
+      <div
+        className={`flex flex-col h-full space-y-4 ${
+          isMobile ? "px-0 pt-0" : "px-4 pt-4"
+        } `}
+      >
         <h2 className="text-2xl font-semibold text-foreground tracking-tight">
           My Documents
         </h2>

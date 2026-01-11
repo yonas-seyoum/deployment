@@ -17,7 +17,7 @@ export default function ChatHeader({
   if (!reciever) return null;
 
   return (
-    <div className="border-b px-4 py-4 flex items-center justify-between bg-card">
+    <div className="border-b px-4 py-4 flex items-center justify-between bg-card rounded-t-md">
       <div className="flex items-center gap-3">
         <div
           className="relative group cursor-pointer"

@@ -41,8 +41,8 @@ export default function JobListings({
   }
 
   return (
-    <div className="max-h-screen w-full md:w-96 rounded-lg overflow-hidden flex flex-col bg-white dark:bg-black">
-      <div className="p-4 bg-white dark:bg-black flex justify-between items-center gap-2">
+    <div className="max-h-screen w-full md:w-96 border border-border rounded-lg overflow-hidden flex flex-col bg-card">
+      <div className="p-4 flex justify-between items-center gap-2">
         <h2 className="font-semibold text-foreground text-sm">
           {"10,000"}+ Jobs
         </h2>
@@ -63,10 +63,10 @@ export default function JobListings({
           <Card
             key={job.id}
             onClick={() => onSelectJob(job.id)}
-            className={`w-full text-left p-4 hover:bg-[#4d32fb] hover:text-white dark:hover:bg-[#4d32fb] dark:hover:text-white transition-all rounded-none shadow-none cursor-pointer relative group ${
+            className={`w-full text-left p-4  hover:text-white  dark:hover:text-white transition-all rounded-none shadow-none cursor-pointer relative group bg-card! ${
               selectedJob?.id === job.id
-                ? "bg-[#4d32fb] text-white dark:bg-[#4d32fb] dark:text-white"
-                : "bg-white dark:bg-black"
+                ? "border-l-4 border-l-[#4d32fb] text-white dark:border-l-[#4d32fb] dark:text-white"
+                : ""
             }`}
           >
             <div className="space-y-2">
@@ -90,7 +90,7 @@ export default function JobListings({
                 </Badge>
 
                 <span className="text-xs font-medium text-foreground">
-                  {job.salaryMax || job.fixedBudget}
+                  {job.salaryMax || job.fixedBudget}$
                 </span>
               </div>
 

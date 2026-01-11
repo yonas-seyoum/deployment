@@ -2,7 +2,6 @@
 
 import JobsManagerProvider from "@/context/JobsManagerProvider";
 import ResumeManagerProvider from "@/context/ResumeManagerProvider";
-import { SocketProvider } from "@/context/SocketProvider";
 
 export default function RootLayout({
   children,
@@ -12,11 +11,9 @@ export default function RootLayout({
   return (
     <ResumeManagerProvider>
       <JobsManagerProvider>
-        {/* <SocketProvider> */}
-          <div className="@component/main px-6 h-full w-full pb-4">
-            {children}
-          </div>
-        {/* </SocketProvider> */}
+        <div className="@component/main px-6 h-full w-full pb-4">
+          {children}
+        </div>
       </JobsManagerProvider>
     </ResumeManagerProvider>
   );

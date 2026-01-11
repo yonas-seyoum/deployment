@@ -98,7 +98,7 @@ export default function Chat({
 
   return (
     <>
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 hide-scroll bg-background dark:bg-black">
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 hide-scroll bg-card ">
         {messages.map((msg) => {
           return (
             <>
@@ -136,14 +136,14 @@ export default function Chat({
         <div ref={bottomRef} />
       </div>
 
-      <div className="border-t border-border bg-card dark:bg-black/50 px-4 py-4">
+      <div className="border-t border-border bg-card  px-4 py-4 rounded-b-md">
         <div className="flex items-center gap-3">
           <Input
             placeholder="Type a message..."
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-            className="rounded-full bg-background dark:bg-black border-border"
+            className="rounded-full bg-background  border-border"
           />
 
           <Button

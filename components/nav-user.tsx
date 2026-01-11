@@ -3,6 +3,7 @@
 import {
   IconDotsVertical,
   IconLogout,
+  IconMessage,
   IconNotification,
   IconUserCircle,
 } from "@tabler/icons-react";
@@ -25,6 +26,7 @@ import {
 } from "@/components/ui/sidebar";
 import { User } from "@/app/types";
 import { useRouter } from "next/navigation";
+import { ThemeToggle } from "./theme-toggle";
 export function NavUser({ user }: { user: User | undefined }) {
   const { isMobile } = useSidebar();
   const router = useRouter();
@@ -39,6 +41,10 @@ export function NavUser({ user }: { user: User | undefined }) {
 
   const handleProfileClick = () => {
     router.push(`/dashboard/${user?.role.toLocaleLowerCase()}/profile`);
+  };
+
+  const handleGotoMessage = () => {
+    router.push(`/dashboard/${user?.role.toLocaleLowerCase()}/messages`);
   };
 
   return (
@@ -109,6 +115,22 @@ export function NavUser({ user }: { user: User | undefined }) {
                 Account
               </DropdownMenuItem>
             </DropdownMenuGroup>
+            {isMobile && (
+              <DropdownMenuGroup>
+                <DropdownMenuItem onClick={handleGotoMessage}>
+                  <IconMessage />
+                  Messages
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            )}
+            {isMobile && (
+              <DropdownMenuGroup>
+                <DropdownMenuItem>
+                  <ThemeToggle />
+                  Change Theme
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               <IconLogout />

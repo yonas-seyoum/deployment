@@ -46,7 +46,9 @@ export default function CreateResumeModal({
       }
     }
   };
-  const handleResumeUploaded = (data: Partial<ResumeData>) => {};
+  const handleResumeUploaded = (data: Partial<ResumeData>) => {
+    router.push(`/dashboard/seeker/create-resume/${data.id}`);
+  };
 
   const handleCreateFromFile = () => {
     fileInputRef.current?.click();

@@ -13,7 +13,7 @@ export default function ExploreJobs() {
   const isMobileJobDetailVisible = isMobile && selectedJob !== null;
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden pt-3 bg-white dark:bg-black">
+    <div className="flex-1 flex flex-col overflow-hidden pt-3 ">
       {!isMobileJobDetailVisible && <FilterSection />}
 
       <div className="flex flex-1 overflow-hidden gap-4 pt-2">
@@ -28,7 +28,9 @@ export default function ExploreJobs() {
         <div className="hidden md:flex h-[80vh] w-full gap-4 flex-col md:flex-row pb-4">
           <JobListings selectedJob={selectedJob} onSelectJob={selectJob} />
           <JobDetail job={selectedJob} />
-          <ResumePanel />
+          <div className="hidden h-full lg:flex flex-col w-80 bg-card rounded-lg border border-border overflow-y-auto">
+            <ResumePanel />
+          </div>
         </div>
       </div>
     </div>
