@@ -2,7 +2,6 @@
 
 import ResumeAnalysis from "@/components/resume/resume-analysis";
 import { ResumeEditor } from "@/components/resume/resume-editor";
-import ResumePreview from "@/components/resume/resume-preview";
 import ResumeSkeleton from "@/components/resume/skeleton/resume-skeleton";
 import ResumeOptimizer from "@/components/resume/resume.optimizer";
 import { Button } from "@/components/ui/button";
@@ -12,17 +11,27 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CoverLetter } from "@/components/cover-letter/cover-letter";
 import dynamic from "next/dynamic";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { resumeApi } from "@/app/api/resume";
 import { TemplatePreview, templates } from "@/components/resume/templates";
 import { TemplateType } from "@/components/resume/templates/types";
 import { useResumeManager } from "@/context/ResumeManagerProvider";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function Home() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
   const id = params.id as string;
+  const isMobile = useIsMobile();
 
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("resume");
@@ -42,12 +51,6 @@ export default function Home() {
   );
 
   const isResumeLoading = false;
-
-  // const { data: resumeData, isLoading: isResumeLoading } = useQuery({
-  //   queryKey: ["resumes"],
-  //   queryFn: resumeApi.getResumes,
-  //   select: (data) => data.find((res) => res.id === id),
-  // });
 
   const changeTemplate = useMutation({
     mutationFn: ({ id, template }: { id: string; template: string }) =>
@@ -90,51 +93,76 @@ export default function Home() {
               >
                 <ArrowLeft className="w-5 h-5" />
               </Button>
-              <h1 className="text-2xl font-bold text-foreground flex items-center">
+              <h1 className="text-xl font-bold text-foreground flex items-center">
                 Resume Builder
               </h1>
-              <TabsList className="grid grid-cols-5 w-fit mx-6 my-2">
-                <TabsTrigger value="resume">Resume Editor</TabsTrigger>
-                <TabsTrigger value="templates">Templates</TabsTrigger>
-                <TabsTrigger value="analysis">Analysis</TabsTrigger>
-                <TabsTrigger value="optimize">Job Matcher</TabsTrigger>
-                <TabsTrigger value="cover-letter">Cover Letter</TabsTrigger>
-              </TabsList>
+              {!isMobile ? (
+                <TabsList className="grid grid-cols-5 w-fit mx-6 my-2">
+                  <TabsTrigger value="resume">Resume Editor</TabsTrigger>
+                  <TabsTrigger value="templates">Templates</TabsTrigger>
+                  <TabsTrigger value="analysis">Analysis</TabsTrigger>
+                  <TabsTrigger value="optimize">Job Matcher</TabsTrigger>
+                  <TabsTrigger value="cover-letter">Cover Letter</TabsTrigger>
+                </TabsList>
+              ) : (
+                <Select value={activeTab} onValueChange={handleTabChange}>
+                  <SelectTrigger className="h-8 w-fit shadow-none">
+                    <SelectValue placeholder="Editor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="resume">Editor</SelectItem>
+                    <SelectItem value="templates">Templates</SelectItem>
+                    <SelectItem value="analysis">Analysis</SelectItem>
+                    <SelectItem value="optimize">Job Matcher</SelectItem>
+                    <SelectItem value="cover-letter">Cover Letter</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
             </div>
-            {activeTab === "resume" && !isResumeLoading && (
-              <DownloadResumeButton resumeData={resumeData} />
+            {activeTab === "resume" && !isResumeLoading && !isMobile && (
+              <DownloadResumeButton
+                size="default"
+                buttonType="default"
+                resumeData={resumeData}
+              />
             )}
           </div>
         </header>
 
         <TabsContent
           value="resume"
-          className="overflow-hidden bg-muted rounded-md px-6 h-full py-6"
+          className={`overflow-hidden ${
+            isMobile ? "bg-none" : "bg-muted px-6 py-6"
+          }  rounded-md  h-full `}
         >
           <div className="h-full overflow-y-scroll hide-scroll">
-            <div className="grid grid-cols-[2fr_3fr] gap-x-4 h-full">
+            <div className="flex md:grid grid-cols-[2fr_3fr] gap-x-4 h-full">
               <div className="order-1 lg:order-1 h-full">
                 <ResumeEditor resumeData={resumeData} />
               </div>
 
-              <div className="order-2 lg:order-2 lg:sticky lg:top-24 lg:h-full overflow-y-scroll hide-scroll">
-                {!isResumeLoading ? (
-                  <div className="w-full min-h-screen p-6 shadow-md bg-white rounded-md py-4">
-                    <SelectedTemplate resumeData={resumeData} />
-                  </div>
-                ) : (
-                  <div className="w-full flex justify-center py-6">
-                    <ResumeSkeleton />
-                  </div>
-                )}
-              </div>
+              {!isMobile && (
+                <div className="order-2 lg:order-2 lg:sticky lg:top-24 lg:h-full overflow-y-scroll hide-scroll">
+                  {!isResumeLoading ? (
+                    <div className="w-full min-h-screen p-6 shadow-md bg-white rounded-md py-4">
+                      <SelectedTemplate resumeData={resumeData} />
+                    </div>
+                  ) : (
+                    <div className="w-full flex justify-center py-6">
+                      <ResumeSkeleton />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </TabsContent>
 
         <TabsContent
           value="templates"
-          className="h-full bg-muted rounded-md overflow-hidden px-6 py-4"
+          className={`h-full rounded-md overflow-hidden ${
+            isMobile ? "" : "px-6 py-4 bg-muted"
+          } `}
         >
           <div className="h-full overflow-y-scroll hide-scroll">
             <div className="flex flex-col gap-8 h-full overflow-y-scroll hide-scroll">
@@ -145,7 +173,7 @@ export default function Home() {
                   return (
                     <div
                       key={template.templateId}
-                      className={`group rounded-xl overflow-hidden bg-background transition-all
+                      className={`group rounded-xl overflow-hidden bg-background transition-all  border border-border
               ${isActive ? "shadow-md" : "border-border hover:shadow-lg"}
             `}
                     >
@@ -202,13 +230,52 @@ export default function Home() {
 
         <TabsContent
           value="analysis"
-          className="overflow-hidden bg-muted rounded-md px-6 h-full py-6"
+          className={`bg-muted rounded-md h-full overflow-hidden ${
+            isMobile ? "px-0 py-0" : "px-6 py-6"
+          }`}
         >
-          <div className="h-full overflow-y-scroll hide-scroll">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full ">
-              <div className="py-0 bg-muted h-full  overflow-y-scroll hide-scroll">
+          <div className="h-full overflow-hidden">
+            <div
+              className={`grid gap-6 h-full ${
+                isMobile ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-2"
+              }`}
+            >
+              {!isMobile && (
+                <div className="pb-16 bg-muted h-full overflow-y-scroll hide-scroll">
+                  {!isResumeLoading ? (
+                    <div className="w-full bg-white rounded-md shadow-md p-6 py-4">
+                      <SelectedTemplate resumeData={resumeData} />
+                    </div>
+                  ) : (
+                    <div className="w-full flex justify-center py-6">
+                      <ResumeSkeleton />
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="h-full">
+                <ResumeAnalysis />
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent
+          value="optimize"
+          className={`space-y-6 bg-muted overflow-hidden rounded-md h-full ${
+            isMobile ? "px-0 py-0" : "px-6 py-6"
+          }`}
+        >
+          <div
+            className={`grid gap-4 h-full ${
+              isMobile ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-2"
+            }`}
+          >
+            {!isMobile && (
+              <div className="w-full bg-muted h-full overflow-y-scroll hide-scroll">
                 {!isResumeLoading ? (
-                  <div className="w-full min-h-screen p-6 shadow-md bg-white rounded-md py-4">
+                  <div className="w-full bg-white rounded-md shadow-md p-6">
                     <SelectedTemplate resumeData={resumeData} />
                   </div>
                 ) : (
@@ -217,30 +284,11 @@ export default function Home() {
                   </div>
                 )}
               </div>
+            )}
 
-              <ResumeAnalysis />
+            <div className="h-full">
+              <ResumeOptimizer />
             </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent
-          value="optimize"
-          className="space-y-6 bg-muted overflow-hidden rounded-md px-6"
-        >
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-full ">
-            <div className="w-full py-0 bg-muted h-full  overflow-y-scroll hide-scroll">
-              {!isResumeLoading ? (
-                <div className="w-full h-full p-6 shadow-md bg-white rounded-md">
-                  <SelectedTemplate resumeData={resumeData} />
-                </div>
-              ) : (
-                <div className="w-full flex justify-center py-6">
-                  <ResumeSkeleton />
-                </div>
-              )}
-            </div>
-
-            <ResumeOptimizer />
           </div>
         </TabsContent>
 

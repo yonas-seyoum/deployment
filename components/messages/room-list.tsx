@@ -29,7 +29,7 @@ export default function RoomList({
   });
 
   return (
-    <div className="w-80 rounded-lg bg-card flex-col md:flex hidden">
+    <div className="w-full h-full rounded-xl bg-card flex-col flex shadow-md border">
       <div className="border-b border-border px-6 py-4">
         <h1 className="text-2xl font-semibold text-foreground dark:text-white">
           Messages

@@ -1,4 +1,5 @@
 import { BASE_URL } from "@/app/constants";
+import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -8,20 +9,18 @@ export async function GET(
   const token = request.cookies.get("access_token")?.value;
   const { id } = await params;
 
-  const resumes = await fetch(`${BASE_URL}/resumes/${id}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!resumes.ok) {
-    return NextResponse.json(
-      { message: "Failed to fetch resume" },
-      { status: 500 }
-    );
+  if (!token) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
-  const data = await resumes.json();
-  return NextResponse.json(data);
+
+  try {
+    const response = await axios.get(`${BASE_URL}/resumes/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return NextResponse.json(response.data);
+  } catch {
+    NextResponse.json({ message: "Failed to fetch resume" }, { status: 500 });
+  }
 }

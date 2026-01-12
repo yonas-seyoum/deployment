@@ -231,7 +231,11 @@ export default function CandidateCard({ candidate }: { candidate: Candidate }) {
               </div>
 
               {resumeData ? (
-                <DownloadResumeButton resumeData={resumeData} />
+                <DownloadResumeButton
+                  size="default"
+                  buttonType="default"
+                  resumeData={resumeData}
+                />
               ) : (
                 <span className="text-xs text-muted-foreground">
                   Not uploaded

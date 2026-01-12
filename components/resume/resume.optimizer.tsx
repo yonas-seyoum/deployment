@@ -14,10 +14,12 @@ import { Button } from "../ui/button";
 import { useState } from "react";
 import EasyApplyModal from "../job/easy-apply/easy-apply-modal";
 import axios from "axios";
+import DownloadResumeButton from "./DownloadResume";
 
 export default function ResumeOptimizer() {
   const { selectedJob } = useJobsManager();
-  const { activeResume, setResumeData, getResumeById } = useResumeManager();
+  const { activeResume, resumeData, setResumeData, getResumeById } =
+    useResumeManager();
 
   const renderImprovement = (text: string) => {
     const parts = text.split(/(\*\*[^*]+\*\*)/g);
@@ -99,11 +101,15 @@ export default function ResumeOptimizer() {
           <div className="flex gap-2 flex-wrap">
             {selectedJob?.source === "external" ? (
               selectedJob?.applicationLink ? (
-                <a target="_blank" href={selectedJob.applicationLink} rel="noopener noreferrer">
-                <Button className="bg-blue-500 hover:bg-blue-700">
-                  Apply now
-                </Button>
-              </a>
+                <a
+                  target="_blank"
+                  href={selectedJob.applicationLink}
+                  rel="noopener noreferrer"
+                >
+                  <Button className="bg-blue-500 hover:bg-blue-700">
+                    Apply now
+                  </Button>
+                </a>
               ) : (
                 <Button className="bg-blue-500 hover:bg-blue-700" disabled>
                   Apply now
@@ -118,9 +124,12 @@ export default function ResumeOptimizer() {
                 {jobIsApplied(selectedJob?.id ?? "") ? "Applied" : "Easy Apply"}
               </Button>
             )}
-            <Button variant="outline" className=" hover:bg-blue-700">
-              Download
-            </Button>
+
+            <DownloadResumeButton
+              size="default"
+              buttonType="outline"
+              resumeData={resumeData}
+            />
 
             <Button
               variant="outline"
@@ -143,7 +152,7 @@ export default function ResumeOptimizer() {
           ).map(([key, section]) => (
             <div
               key={key}
-              className="bg-card border border-border/50 rounded-xl py-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow"
+              className="bg-card border border-border/50 rounded-xl py-4 p-6 shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-base sm:text-lg font-semibold text-foreground capitalize truncate">

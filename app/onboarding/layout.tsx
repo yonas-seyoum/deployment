@@ -27,7 +27,7 @@ export default async function RootLayout({
     {
       algorithms: ["RS256"],
     }
-  ) as {sub:string; fullName: string; role: string; onboarding: boolean };
+  ) as { sub: string; fullName: string; role: string; onboarding: boolean };
 
   console.log(decodedToken);
 
@@ -38,7 +38,7 @@ export default async function RootLayout({
       role={role}
       onBoardingStatus={decodedToken.onboarding}
     >
-      <div className="@component/main overflow-hidden w-full  h-full">
+      <div className="@component/main overflow-hidden w-full h-full">
         {children}
       </div>
     </DashboardContextProvider>

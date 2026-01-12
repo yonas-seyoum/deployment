@@ -223,35 +223,31 @@ export default function OnboardingPage() {
   return (
     <div className="bg-muted min-h-screen flex flex-col">
       <header className="border-b border-border bg-card">
-        <div className="container max-w-4xl mx-auto px-4 py-4">
+        <div className="container max-w-4xl mx-auto px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center">
-                <Briefcase className="h-5 w-5 text-primary-foreground" />
+                <Briefcase className="h-5 w-5 text-white" />
               </div>
 
               <div className="flex flex-col">
-                <span className="text-sm font-semibold text-foreground leading-none">
-                  CareerScaleUp
-                </span>
-                <span className="text-xs text-muted-foreground leading-none">
+                <span className="text-sm font-semibold">CareerScaleUp</span>
+                <span className="text-xs text-muted-foreground hidden sm:block">
                   {role === Role.Seeker
                     ? "Find Your Dream Job"
-                    : role === Role.Recruiter
-                    ? "Find Best Talents"
-                    : ""}
+                    : "Find Best Talents"}
                 </span>
               </div>
             </div>
 
-            <span className="text-sm text-muted-foreground">
+            <span className="block text-sm text-muted-foreground">
               Welcome, {fullName}
             </span>
           </div>
         </div>
       </header>
 
-      <main className="flex-1 container max-w-2xl mx-auto px-4 py-8 sm:py-12">
+      <main className="flex-1 container max-w-2xl mx-auto px-4 pt-2 pb-4 sm:py-12">
         <StepIndicator steps={steps} currentStep={currentStep} />
 
         <div className="onboarding-card">

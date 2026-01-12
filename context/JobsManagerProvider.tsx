@@ -48,11 +48,7 @@ export default function JobsManagerProvider({
 
     onSuccess: (data) => {
       queryClient.setQueryData(["jobs"], data);
-      if (!isMobile) {
-        setSelectedJob(null);
-      } else {
-        setSelectedJob(null);
-      }
+      setSelectedJob(jobsData?.jobs[0] || null);
     },
 
     onError: (err) => {

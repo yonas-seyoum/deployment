@@ -46,7 +46,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar
       collapsible="icon"
       {...props}
-      className="shadow-xl bg-background dark"
+      className="shadow-xl bg-background dark border-r-0!"
     >
       <SidebarHeader className="bg-background px-0! dark">
         <SidebarGroup className="py-0!">
@@ -71,10 +71,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       </TooltipTrigger>
 
                       {isCollapsed && (
-                        <TooltipContent
-                          side="right"
-                          className="py-1 text-sm"
-                        >
+                        <TooltipContent side="right" className="py-1 text-sm">
                           CareerScaleUp
                         </TooltipContent>
                       )}
@@ -102,13 +99,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 }
 
                 const Button = (
-                  <Link href={item.href}>
-                    <SidebarMenuButton
-                      isActive={item.href === pathname}
-                      className={`py-2 font-bold ${
-                        !isCollapsed || isMobile ? "" : "flex items-center justify-center"
-                      }`}
-                    >
+                  <SidebarMenuButton
+                    asChild
+                    isActive={item.href === pathname}
+                    className={`py-2 font-bold ${
+                      !isCollapsed || isMobile
+                        ? ""
+                        : "flex items-center justify-center"
+                    }`}
+                  >
+                    <Link href={item.href}>
                       {item.icon && (
                         <div className="text-foreground">
                           <item.icon />
@@ -119,8 +119,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           {item.name.toUpperCase()}
                         </span>
                       )}
-                    </SidebarMenuButton>
-                  </Link>
+                    </Link>
+                  </SidebarMenuButton>
                 );
 
                 return (
@@ -151,7 +151,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
 
       <SidebarFooter className="bg-background dark">
-        <NavUser user={profile} />
+        <NavUser user={profile} position="app-sidebar" />
       </SidebarFooter>
     </Sidebar>
   );

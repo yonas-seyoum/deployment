@@ -119,7 +119,7 @@ export default function ResumeAnalysis() {
           </div>
         </div>
       </div>
-      <ScrollArea className="flex-1 overflow-y-scroll hide-scroll pt-0">
+      <ScrollArea className="flex-1 overflow-y-scroll hide-scroll pt-0 pb-12">
         <div className="space-y-3 sm:py-2">
           {sortedSections.map(([key, section]: any) => (
             <div
@@ -138,27 +138,35 @@ export default function ResumeAnalysis() {
                       {section.section_name}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      <span className="text-emerald-600 dark:text-emerald-400 font-medium">
-                        {section.strengths.length} strengths
-                      </span>
+                      {section.strengths && (
+                        <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                          {section.strengths.length} strengths
+                        </span>
+                      )}
                       {" • "}
-                      <span className="text-amber-600 dark:text-amber-400 font-medium">
-                        {section.gaps.length} gaps
-                      </span>
+                      {section.gaps && (
+                        <span className="text-amber-600 dark:text-amber-400 font-medium">
+                          {section.gaps.length} gaps
+                        </span>
+                      )}
                       {" • "}
-                      <span className="text-blue-600 dark:text-blue-400 font-medium">
-                        {section.specific_improvements.length} improvements
-                      </span>
+                      {section.specific_improvements && (
+                        <span className="text-blue-600 dark:text-blue-400 font-medium">
+                          {section.specific_improvements.length} improvements
+                        </span>
+                      )}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                  <Badge
-                    variant="outline"
-                    className="shrink-0 border font-semibold text-xs sm:text-sm px-2 sm:px-3 bg-slate-500/10 text-slate-700 dark:text-slate-400 border-slate-200 dark:border-slate-800"
-                  >
-                    {section.alignment_score}%
-                  </Badge>
+                  {section.alignment_score && (
+                    <Badge
+                      variant="outline"
+                      className="shrink-0 border font-semibold text-xs sm:text-sm px-2 sm:px-3 bg-slate-500/10 text-slate-700 dark:text-slate-400 border-slate-200 dark:border-slate-800"
+                    >
+                      {section.alignment_score}%
+                    </Badge>
+                  )}
                   <ChevronDown
                     className="h-4 w-4 shrink-0 transition-transform text-muted-foreground"
                     style={{
@@ -247,17 +255,19 @@ export default function ResumeAnalysis() {
                     </div>
                   )}
 
-                  <div className="rounded-lg bg-blue-500/5 border border-blue-200/50 dark:border-blue-900/30 p-3 sm:p-4 space-y-2">
-                    <div className="flex gap-2 items-start">
-                      <BookOpen className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
-                      <p className="font-semibold text-xs sm:text-sm text-blue-700 dark:text-blue-400">
-                        Optimization Report
+                  {section.optimization_report && (
+                    <div className="rounded-lg bg-blue-500/5 border border-blue-200/50 dark:border-blue-900/30 p-3 sm:p-4 space-y-2">
+                      <div className="flex gap-2 items-start">
+                        <BookOpen className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+                        <p className="font-semibold text-xs sm:text-sm text-blue-700 dark:text-blue-400">
+                          Optimization Report
+                        </p>
+                      </div>
+                      <p className="text-xs sm:text-sm leading-relaxed text-foreground ml-6 text-justify">
+                        {section.optimization_report}
                       </p>
                     </div>
-                    <p className="text-xs sm:text-sm leading-relaxed text-foreground ml-6 text-justify">
-                      {section.optimization_report}
-                    </p>
-                  </div>
+                  )}
                 </div>
               )}
             </div>

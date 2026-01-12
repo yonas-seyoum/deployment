@@ -5,7 +5,7 @@ import { IconLoader } from "@tabler/icons-react";
 
 export default function ResumeAnalysisSkeleton() {
   return (
-    <Card className="flex flex-col bg-muted border-0 shadow-none h-[80vh] py-6 rounded-none gap-3 animate-in fade-in px-0">
+    <Card className="flex flex-col bg-muted border-0 shadow-none h-[80vh] rounded-none gap-3 animate-in fade-in px-0">
       <div className="px-4 py-4 sm:px-6 sm:py-5 bg-card rounded-md text-primary-foreground shadow-md flex items-center gap-3">
         <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-600/10">
           <IconLoader className="w-5 h-5 text-blue-600 animate-spin" />

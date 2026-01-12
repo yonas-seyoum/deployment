@@ -13,45 +13,51 @@ interface StepIndicatorProps {
 
 export const StepIndicator = ({ steps, currentStep }: StepIndicatorProps) => {
   return (
-    <div className="flex items-center justify-center gap-2 mb-8">
-      {steps.map((step, index) => {
-        const isComplete = currentStep > step.id;
-        const isActive = currentStep === step.id;
-        const isPending = currentStep < step.id;
+    <div className="w-full py-4 overflow-x-auto mb-2 hide-scroll">
+      <div className="flex items-center gap-2 px-2 sm:justify-center">
+        {steps.map((step, index) => {
+          const isComplete = currentStep > step.id;
+          const isActive = currentStep === step.id;
+          const isPending = currentStep < step.id;
 
-        return (
-          <div key={step.id} className="flex items-center">
-            <div className="flex flex-col items-center w-14">
-              <div
-                className={cn(
-                  "step-indicator",
-                  isComplete && "step-complete",
-                  isActive && "step-active",
-                  isPending && "step-pending"
-                )}
-              >
-                {isComplete ? <Check className="w-5 h-5" /> : step.id}
+          return (
+            <div key={step.id} className="flex items-center flex-shrink-0">
+              <div className="flex flex-col items-center w-10 sm:w-14">
+                <div
+                  className={cn(
+                    "step-indicator",
+                    "h-8 w-8 sm:h-10 sm:w-10 text-sm",
+                    isComplete && "step-complete",
+                    isActive && "step-active",
+                    isPending && "step-pending"
+                  )}
+                >
+                  {isComplete ? <Check className="w-4 h-4" /> : step.id}
+                </div>
+
+                <span
+                  className={cn(
+                    "mt-2 text-xs font-medium hidden sm:block",
+                    isActive ? "text-primary" : "text-muted-foreground"
+                  )}
+                >
+                  {step.title}
+                </span>
               </div>
-              <span
-                className={cn(
-                  "mt-2 text-xs font-medium hidden sm:block",
-                  isActive ? "text-primary" : "text-muted-foreground"
-                )}
-              >
-                {step.title}
-              </span>
+
+              {index < steps.length - 1 && (
+                <div
+                  className={cn(
+                    "h-0.5 mx-1 sm:mx-2",
+                    "w-6 sm:w-16",
+                    isComplete ? "step-complete" : "step-pending"
+                  )}
+                />
+              )}
             </div>
-            {index < steps.length - 1 && (
-              <div
-                className={cn(
-                  "w-12 sm:w-20 h-0.5 mx-2 transition-colors duration-300",
-                  isComplete ? "step-complete" : "step-pending"
-                )}
-              />
-            )}
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 };

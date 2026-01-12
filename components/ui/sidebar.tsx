@@ -275,7 +275,7 @@ function SidebarTrigger({
       {...props}
     >
       {isMobile ? (
-        <Menu className="h-full w-full text-lg font-extrabold text-blue-700" />
+        <Menu size={120} className="h-full w-full text-lg font-extrabold text-blue-700" />
       ) : (
         <>
           <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center">

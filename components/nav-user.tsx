@@ -27,7 +27,13 @@ import {
 import { User } from "@/app/types";
 import { useRouter } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
-export function NavUser({ user }: { user: User | undefined }) {
+export function NavUser({
+  user,
+  position,
+}: {
+  user: User | undefined;
+  position: "app-header" | "app-sidebar";
+}) {
   const { isMobile } = useSidebar();
   const router = useRouter();
 
@@ -66,7 +72,7 @@ export function NavUser({ user }: { user: User | undefined }) {
                   {user?.fullName?.[0] || user?.companyName?.[0]}
                 </AvatarFallback>
               </Avatar>
-              {!isMobile && (
+              {!(isMobile && position === "app-header") && (
                 <>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-medium">

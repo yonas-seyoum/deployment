@@ -56,7 +56,11 @@ export default function ResumeCard({
               {resume?.basics?.fullName || "Untitled Resume"}
             </h3>
             <p className="text-xs text-muted-foreground mt-1">
-              Edited 2 hrs ago
+              {new Date(resume.generatedAt).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })}
             </p>
           </div>
 

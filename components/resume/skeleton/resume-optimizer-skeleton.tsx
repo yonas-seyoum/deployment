@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 
 export default function ResumeOptimizationSkeleton() {
   return (
-    <Card className="flex flex-col bg-muted border-0 shadow-none h-[80vh] py-6 rounded-none">
+    <Card className="flex flex-col bg-muted border-0 shadow-none h-[80vh]  rounded-none py-0!">
       <div className="bg-card border-b px-4 py-4 sm:px-6 sm:py-5 rounded-md flex items-center gap-3">
         <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-600/10">
           <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />

@@ -7,10 +7,16 @@ import { ResumePreviewProps } from "@/app/types";
 import { TemplateComponents } from "./templates";
 
 export interface Props {
+  buttonType: "outline" | "default";
+  size: "default" | "compact";
   resumeData: ResumePreviewProps["resumeData"];
 }
 
-export default function DownloadResumeButton({ resumeData }: Props) {
+export default function DownloadResumeButton({
+  size,
+  buttonType,
+  resumeData,
+}: Props) {
   if (!resumeData) return null;
 
   const SelectedTemplate =
@@ -22,11 +28,20 @@ export default function DownloadResumeButton({ resumeData }: Props) {
       fileName="resume.pdf"
     >
       {({ loading }) => (
-        <Button className="gap-2 bg-blue-600 hover:bg-blue-700 transition-colors duration-200 text-white">
+        <Button
+          variant={buttonType}
+          className={
+            buttonType === "outline"
+              ? ""
+              : "gap-2 bg-blue-600 hover:bg-blue-700 transition-colors duration-200 text-white"
+          }
+        >
           <Download className="w-4 h-4" />
-          <span className="hidden sm:inline">
-            {loading ? "Generating..." : "Download"}
-          </span>
+          {size === "default" && (
+            <span className="hidden sm:inline">
+              {loading ? "Generating..." : "Download"}
+            </span>
+          )}
         </Button>
       )}
     </PDFDownloadLink>

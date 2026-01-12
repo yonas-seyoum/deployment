@@ -81,7 +81,7 @@ export function AppHeader() {
             className="h-6 bg-[hsl(var(--header-border))] hidden sm:block"
           />
 
-          <NavUser user={profile} />
+          <NavUser user={profile} position="app-header" />
         </div>
       </div>
     </header>
