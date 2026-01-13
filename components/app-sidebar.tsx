@@ -29,11 +29,12 @@ import {
 import { ProfileApi } from "@/app/api/profile";
 import { useQuery } from "@tanstack/react-query";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Menu, X } from "lucide-react";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const { role } = useDashboardContext();
-  const { open } = useSidebar();
+  const { open, toggleSidebar } = useSidebar();
   const isCollapsed = !open;
 
   const isMobile = useIsMobile();
@@ -60,14 +61,36 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         asChild
                         className="px-0! group-data-[collapsible=icon]:p-0!"
                       >
-                        <SidebarMenuButton>
-                          <SidebarTrigger className="p-0!" />
-                          {!isCollapsed && (
-                            <span className="font-bold text-foreground">
-                              CareerScaleUp
-                            </span>
-                          )}
-                        </SidebarMenuButton>
+                        {isCollapsed ? (
+                          <SidebarMenuButton className="flex items-center justify-center px-0!">
+                            {open ? (
+                              <X
+                                className="h-8 w-8 text-xl font-extrabold text-blue-700"
+                                onClick={() => toggleSidebar()}
+                              />
+                            ) : (
+                              <Menu
+                                className="h-8 w-8 text-xl font-extrabold text-blue-700"
+                                onClick={() => toggleSidebar()}
+                              />
+                            )}
+                          </SidebarMenuButton>
+                        ) : (
+                          <SidebarMenuButton className="flex items-center px-2!">
+                            {open ? (
+                              <X
+                                className="h-8 w-8 text-xl font-extrabold text-blue-700"
+                                onClick={() => toggleSidebar()}
+                              />
+                            ) : (
+                              <Menu
+                                className="h-8 w-8 text-xl font-extrabold text-blue-700"
+                                onClick={() => toggleSidebar()}
+                              />
+                            )}
+                            <span className="font-bold">Collapse</span>
+                          </SidebarMenuButton>
+                        )}
                       </TooltipTrigger>
 
                       {isCollapsed && (

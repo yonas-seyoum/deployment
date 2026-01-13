@@ -29,8 +29,6 @@ export default async function RootLayout({
     }
   ) as { sub: string; fullName: string; role: string; onboarding: boolean };
 
-  console.log(decodedToken);
-
   return (
     <DashboardContextProvider
       id={decodedToken.sub}

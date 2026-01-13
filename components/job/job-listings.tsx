@@ -40,6 +40,22 @@ export default function JobListings({
     );
   }
 
+  const now = Date.now() / 1000;
+
+  const timeAgo = (postedAt: number) => {
+    if (!postedAt) return "";
+    const seconds = now - postedAt;
+    const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(seconds / 3600);
+    const days = Math.floor(seconds / 86400);
+
+    if (seconds < 60) return rtf.format(-seconds, "seconds");
+    if (minutes < 60) return rtf.format(-minutes, "minutes");
+    if (hours < 24) return rtf.format(-hours, "hours");
+    return rtf.format(-days, "days");
+  };
+
   return (
     <div className="max-h-screen w-full md:w-96 border border-border rounded-lg overflow-hidden flex flex-col bg-card">
       <div className="p-4 flex justify-between items-center gap-2">
@@ -89,13 +105,28 @@ export default function JobListings({
                   {job.jobType}
                 </Badge>
 
-                <span className="text-xs font-medium text-foreground">
-                  {job.salaryMax || job.fixedBudget}$
-                </span>
+                {job.fixedBudget && (
+                  <span className="text-xs font-medium text-foreground">
+                    {job.fixedBudget}$
+                  </span>
+                )}
+
+                {job.hourlyRate && (
+                  <span className="text-xs font-medium text-foreground">
+                    {job.hourlyRate}$/hr
+                  </span>
+                )}
+
+                {job.salaryMax && job.salaryMin && (
+                  <span className="text-xs font-medium text-foreground">
+                    {job.salaryMin?.toLocaleString()} -{" "}
+                    {job.salaryMax?.toLocaleString()}$
+                  </span>
+                )}
               </div>
 
               <p className="text-xs text-muted-foreground">
-                {new Date(job.postedAt).toDateString()}
+                {timeAgo(job.postedAt)}
               </p>
             </div>
           </Card>

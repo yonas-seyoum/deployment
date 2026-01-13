@@ -570,6 +570,15 @@ export interface JobManagerContextType {
   >;
 
   searchJobs: (searchTerm: string, location: string) => void;
+  searchJobsMutation: UseMutationResult<
+    JobsAPIResponse,
+    Error,
+    {
+      searchTerm: string;
+      location: string;
+    },
+    unknown
+  >;
 }
 
 // resume optimization

@@ -10,8 +10,6 @@ import {
   Mail,
   Check,
   ExternalLink,
-  MapPin,
-  Phone,
   Globe,
   Camera,
 } from "lucide-react";
@@ -20,8 +18,6 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { User } from "@/app/types";
 import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useParams } from "next/navigation";
 

@@ -46,7 +46,7 @@ export function AppHeader() {
                   {profile?.role === Role.Seeker
                     ? "Find Your Dream Job"
                     : profile?.role === Role.Recruiter
-                    ? "Find Best Talents"
+                    ? "Find Top U.S. talent faster"
                     : ""}
                 </span>
               </div>

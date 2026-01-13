@@ -1,10 +1,18 @@
 import api from ".";
 import { CreateJobDto, Job, JobsAPIResponse } from "../types";
 
+interface FetchJobsParams {
+  query: string;
+  location: string;
+  pages: string;
+  num_pages: string;
+  date_posted: string;
+}
+
 export const jobApi = {
-  fetchJobs: async (): Promise<JobsAPIResponse> => {
+  fetchJobs: async (params: FetchJobsParams): Promise<JobsAPIResponse> => {
     return api
-      .get("/job")
+      .get("/job", { params })
       .then((res) => res.data)
       .catch((err) => {
         throw new Error(err.response?.data?.message || "Failed to load jobs");

@@ -97,11 +97,13 @@ export default function Signup() {
                 </Field>
               </Field>
               <Field>
-                <FieldLabel htmlFor="name">Full Name</FieldLabel>
+                <FieldLabel htmlFor="name">
+                  {role === "Seeker" ? "Full Name" : "Company Name"}
+                </FieldLabel>
                 <Input
                   id="name"
                   type="text"
-                  placeholder="John Doe"
+                  placeholder={role === "Seeker" ? "John Doe" : "Acme Inc."}
                   required
                   value={fullName}
                   onChange={(e) =>

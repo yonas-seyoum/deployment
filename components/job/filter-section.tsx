@@ -9,7 +9,7 @@ import { useState } from "react";
 import { IconFilter, IconFilter2Exclamation } from "@tabler/icons-react";
 
 export default function FilterSection() {
-  const { searchJobs } = useJobsManager();
+  const { searchJobs, searchJobsMutation } = useJobsManager();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [location, setLocation] = useState("");
@@ -47,7 +47,7 @@ export default function FilterSection() {
 
         <Button
           className=" text-white px-6 bg-[#4d32fb] hover:bg-[#4d32fb]/90"
-          onClick={() => searchJobs(searchTerm, location)}
+          onClick={() => searchJobsMutation.mutate({ searchTerm, location })}
         >
           <Search className="w-4 h-4" /> Search
         </Button>

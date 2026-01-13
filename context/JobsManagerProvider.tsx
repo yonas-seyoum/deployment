@@ -5,7 +5,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Job, JobManagerContextType } from "@/app/types";
 import { jobApi } from "@/app/api/job";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { is } from "zod/v4/locales";
 
 export const JobsManagerContext = createContext<
   JobManagerContextType | undefined
@@ -31,10 +30,17 @@ export default function JobsManagerProvider({
   const {
     data: jobsData,
     isLoading: loading,
-    error,
+    error,onsole
   } = useQuery({
     queryKey: ["jobs"],
-    queryFn: jobApi.fetchJobs,
+    queryFn: () =>
+      jobApi.fetchJobs({
+        query: "all",
+        location: "us",
+        pages: "1",
+        num_pages: "2",
+        date_posted: "",
+      }),
   });
 
   const searchJobsMutation = useMutation({
@@ -96,6 +102,7 @@ export default function JobsManagerProvider({
         selectJob,
         saveJob,
         searchJobs,
+        searchJobsMutation,
       }}
     >
       {children}

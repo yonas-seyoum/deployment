@@ -27,6 +27,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import ResumePanel from "../resume/resume-panel";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { format } from "date-fns";
 
 interface JobDetailProps {
   job: (Job & { source: "internal" | "external"; easyApplied: boolean }) | null;
@@ -125,17 +126,43 @@ export function JobDetail({ job }: JobDetailProps) {
                 <MapPin className="w-4 h-4 text-muted-foreground" />
                 <span>{job.location}</span>
               </div>
-              <div className="flex items-center gap-2 text-sm">
-                <DollarSign className="w-4 h-4 text-muted-foreground" />
-                <span>{job.fixedBudget || job.salaryMax}</span>
-              </div>
+              {job.fixedBudget ||
+                job.hourlyRate ||
+                (job.salaryMax && job.salaryMin && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <DollarSign className="w-4 h-4 text-muted-foreground" />
+
+                    {job.fixedBudget && (
+                      <span className="text-xs font-medium text-foreground">
+                        {job.fixedBudget}$
+                      </span>
+                    )}
+
+                    {job.hourlyRate && (
+                      <span className="text-xs font-medium text-foreground">
+                        {job.hourlyRate}$/hr
+                      </span>
+                    )}
+
+                    {job.salaryMax && job.salaryMin && (
+                      <span className="text-xs font-medium text-foreground">
+                        {job.salaryMin?.toLocaleString()} -{" "}
+                        {job.salaryMax?.toLocaleString()}$
+                      </span>
+                    )}
+                  </div>
+                ))}
               <div className="flex items-center gap-2 text-sm">
                 <Briefcase className="w-4 h-4 text-muted-foreground" />
                 <span>{job.jobType}</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="w-4 h-4 text-muted-foreground" />
-                <span>{new Date(job.postedAt).toDateString()}</span>
+                {job.postedAt && (
+                  <span>
+                    {format(new Date(job.postedAt * 1000), "dd-MMM-yyyy")}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -185,52 +212,76 @@ export function JobDetail({ job }: JobDetailProps) {
               <AccordionTrigger className="text-base font-semibold hover:no-underline">
                 Job Description
               </AccordionTrigger>
-              <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
-                {job.description}
+              <AccordionContent className="text-sm  leading-relaxed">
+                {job.description.split("\n").map((line, idx) => {
+                  const trimmed = line.trim();
+
+                  const isBullet =
+                    trimmed.startsWith("-") ||
+                    trimmed.startsWith("•") ||
+                    trimmed.startsWith("*") ||
+                    /^\d+\./.test(trimmed);
+
+                  const isSectionTitle =
+                    !isBullet &&
+                    trimmed.length > 0 &&
+                    trimmed.length <= 30 &&
+                    !/[.,;!?]/.test(trimmed);
+
+                  return (
+                    <p
+                      key={idx}
+                      className={`mb-2 ${
+                        isSectionTitle
+                          ? "font-semibold text-foreground mt-5"
+                          : ""
+                      }`}
+                    >
+                      {line}
+                    </p>
+                  );
+                })}
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="requirements">
-              <AccordionTrigger className="text-base font-semibold hover:no-underline">
-                Requirements
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-2">
-                  {job.responsibilities?.map((req, idx) => (
-                    <div key={idx} className="flex items-center gap-2 text-sm">
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                      <span>{req}</span>
-                    </div>
-                  ))}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
+            {job.responsibilities?.length !== 0 && (
+              <AccordionItem value="requirements">
+                <AccordionTrigger className="text-base font-semibold hover:no-underline">
+                  Requirements
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-2">
+                    {job.responsibilities?.map((req, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center gap-2 text-sm"
+                      >
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                        <span>{req}</span>
+                      </div>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            )}
 
-            <AccordionItem value="benefits">
-              <AccordionTrigger className="text-base font-semibold hover:no-underline">
-                Benefits & Perks
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    <span>Competitive health insurance</span>
+            {job.benefits?.length !== 0 && (
+              <AccordionItem value="benefits">
+                <AccordionTrigger className="text-base font-semibold hover:no-underline">
+                  Benefits & Perks
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-2 text-sm">
+                    {job.benefits?.map((benefit, idx) => (
+                      <div key={idx} className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                        <span>{benefit}</span>
+                      </div>
+                    ))}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    <span>401(k) matching</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    <span>Professional development budget</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    <span>Flexible work arrangements</span>
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
+                </AccordionContent>
+              </AccordionItem>
+            )}
           </Accordion>
         </div>
       </Card>
