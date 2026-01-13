@@ -30,7 +30,7 @@ export default function JobsManagerProvider({
   const {
     data: jobsData,
     isLoading: loading,
-    error,onsole
+    error
   } = useQuery({
     queryKey: ["jobs"],
     queryFn: () =>
