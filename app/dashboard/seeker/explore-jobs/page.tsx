@@ -28,7 +28,7 @@ export default function ExploreJobs() {
         <div className="hidden md:flex h-[80vh] w-full gap-4 flex-col md:flex-row pb-4">
           <JobListings selectedJob={selectedJob} onSelectJob={selectJob} />
           <JobDetail job={selectedJob} />
-          <div className="hidden h-full lg:flex flex-col w-80 bg-card rounded-lg border border-border overflow-y-auto">
+          <div className="hidden h-full lg:flex flex-col w-80 bg-card rounded-lg border border-border">
             <ResumePanel />
           </div>
         </div>

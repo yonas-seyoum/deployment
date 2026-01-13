@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { resumeApi } from "@/app/api/resume";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ScrollArea } from "../ui/scroll-area";
 
 export default function ResumePanel() {
   const router = useRouter();
@@ -65,7 +66,11 @@ export default function ResumePanel() {
   }
 
   return (
-    <div className={`w-full ${isMobile ? "bg-none border-primary" : "bg-card"}`}>
+    <div
+      className={`w-full h-full ${
+        isMobile ? "bg-none border-primary" : "bg-card"
+      }`}
+    >
       {activeResume ? (
         <div className="p-6 space-y-6">
           <div className="flex flex-col items-center gap-4">
@@ -138,49 +143,51 @@ export default function ResumePanel() {
           </div>
 
           {data ? (
-            <div className="flex flex-col gap-6">
-              {(data?.skill_coverage?.hard_skills?.missing_skills ?? [])
-                .length > 0 && (
-                <div className="flex flex-col gap-2">
-                  <h3 className="font-semibold">Hard Skills</h3>
-                  <ul className="list-none flex flex-col gap-1">
-                    {(
-                      data?.skill_coverage?.hard_skills?.missing_skills ?? []
-                    ).map((hardSkill, idx) => (
-                      <li
-                        key={idx}
-                        className="flex items-center gap-2 text-gray-800"
-                      >
-                        <span className="text-red-500 font-bold">×</span>
-                        <span className="text-sm text-primary">
-                          {hardSkill}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {(data?.skill_coverage?.soft_skills?.missing_skills ?? [])
-                .length > 0 && (
-                <div className="flex flex-col gap-2">
-                  <h3 className="font-semibold">Soft Skills</h3>
-                  <ul className="list-none flex flex-col gap-1">
-                    {data?.skill_coverage.soft_skills.missing_skills.map(
-                      (softSkill, idx) => (
+            <ScrollArea className="flex max-h-84 overflow-y-scroll hide-scroll">
+              <div className="flex flex-col h-full gap-6">
+                {(data?.skill_coverage?.hard_skills?.missing_skills ?? [])
+                  .length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    <h3 className="font-semibold">Hard Skills</h3>
+                    <ul className="list-none flex flex-col gap-1">
+                      {(
+                        data?.skill_coverage?.hard_skills?.missing_skills ?? []
+                      ).map((hardSkill, idx) => (
                         <li
                           key={idx}
                           className="flex items-center gap-2 text-gray-800"
                         >
                           <span className="text-red-500 font-bold">×</span>
-                          <span className="text-sm">{softSkill}</span>
+                          <span className="text-sm text-primary">
+                            {hardSkill}
+                          </span>
                         </li>
-                      )
-                    )}
-                  </ul>
-                </div>
-              )}
-            </div>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {(data?.skill_coverage?.soft_skills?.missing_skills ?? [])
+                  .length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    <h3 className="font-semibold">Soft Skills</h3>
+                    <ul className="list-none flex flex-col gap-1">
+                      {data?.skill_coverage.soft_skills.missing_skills.map(
+                        (softSkill, idx) => (
+                          <li
+                            key={idx}
+                            className="flex items-center gap-2 text-gray-800"
+                          >
+                            <span className="text-red-500 font-bold">×</span>
+                            <span className="text-sm">{softSkill}</span>
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </ScrollArea>
           ) : (
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-2">
