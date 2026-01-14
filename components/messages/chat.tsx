@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Send } from "lucide-react";
+import { PaperclipIcon, Send, X } from "lucide-react";
 import { useSocket } from "@/context/SocketProvider";
 import {
   ContextMenu,
@@ -15,6 +15,7 @@ import {
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { User } from "@/app/types";
 import { ChatApi, Room } from "@/app/api/chat";
+import { supabase } from "@/lib/supabase";
 
 interface Message {
   id: string;
@@ -22,8 +23,15 @@ interface Message {
   receiverId: string;
   conversationId: string;
   content: string;
+  attachments?: Attachment | null;
   createdAt: Date;
   readAt: null;
+}
+
+interface Attachment {
+  url: string;
+  name: string;
+  type: string;
 }
 
 export default function Chat({
@@ -38,6 +46,11 @@ export default function Chat({
   const [text, setText] = useState("");
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [receiverId, setReceiverId] = useState<string>("");
+  const [attachment, setAttachment] = useState<Attachment | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const { socket } = useSocket();
@@ -75,14 +88,18 @@ export default function Chat({
   }, [socket, room]);
 
   const sendMessage = () => {
-    if (!text.trim() || !socket) return;
+    if (isUploading) return;
+    if ((!text.trim() && !attachment) || !socket) return;
+
+    const validAttachment = attachment?.url ? attachment : null;
 
     const tempMessage: Message = {
       id: Date.now().toString(),
       senderId: profile.id,
-      receiverId: receiverId,
+      receiverId,
       conversationId: room.id,
       content: text,
+      attachments: validAttachment,
       createdAt: new Date(),
       readAt: null,
     };
@@ -90,54 +107,91 @@ export default function Chat({
     socket.emit("sendMessage", tempMessage);
 
     setText("");
+    setAttachment(null);
   };
 
-  const editMessage = () => {};
+  const handleFileAttach = async (file: File) => {
+    setIsUploading(true);
 
-  const deleteMessage = () => {};
+    const fileName = `${Date.now()}-${file.name
+      .normalize("NFKD")
+      .replace(/[^\w.-]+/g, "_")}`;
+
+    const interval = setInterval(() => {
+      setUploadProgress((p) => (p < 90 ? p + 10 : p));
+    }, 150);
+
+    const { error } = await supabase.storage
+      .from("Message_Attachments")
+      .upload(fileName, file, {
+        upsert: true,
+        cacheControl: "3600",
+        contentType: file.type,
+      });
+
+    clearInterval(interval);
+
+    if (error) {
+      console.error("Upload failed:", error.message);
+      setIsUploading(false);
+      setUploadProgress(0);
+      return;
+    }
+
+    const { data } = supabase.storage
+      .from("Message_Attachments")
+      .getPublicUrl(fileName);
+
+    if (data?.publicUrl) {
+      setAttachment({
+        url: data.publicUrl,
+        name: file.name,
+        type: file.type,
+      });
+    }
+
+    setUploadProgress(100);
+    setTimeout(() => setUploadProgress(0), 400);
+    setIsUploading(false);
+  };
 
   return (
     <>
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 hide-scroll bg-card ">
         {messages.map((msg) => {
-          return (
-            <>
-              {msg.senderId === profile.id ? (
-                <ContextMenu>
-                  <ContextMenuTrigger key={msg.id}>
-                    <MessageBubble
-                      key={msg.id}
-                      message={msg}
-                      profile={profile}
-                    />
-                  </ContextMenuTrigger>
-                  <ContextMenuContent>
-                    <ContextMenuItem inset>
-                      Edit
-                      <ContextMenuShortcut>
-                        <IconEdit />
-                      </ContextMenuShortcut>
-                    </ContextMenuItem>
-                    <ContextMenuItem inset>
-                      Delete
-                      <ContextMenuShortcut>
-                        <IconTrash />
-                      </ContextMenuShortcut>
-                    </ContextMenuItem>
-                  </ContextMenuContent>
-                </ContextMenu>
-              ) : (
-                <MessageBubble key={msg.id} message={msg} profile={profile} />
-              )}
-            </>
-          );
+          return <MessageBubble key={msg.id} message={msg} profile={profile} />;
         })}
 
         <div ref={bottomRef} />
       </div>
 
       <div className="border-t border-border bg-card  px-4 py-4 rounded-b-md">
+        {(isUploading || attachment) && (
+          <div className="mb-2 flex items-center gap-3 px-3 py-2 border rounded-md text-sm">
+            <span className="truncate w-fit">
+              {attachment?.name || "Uploading file..."}
+            </span>
+
+            {isUploading ? (
+              <span className="text-xs text-muted-foreground">
+                {uploadProgress}%
+              </span>
+            ) : (
+              <Button variant="ghost" onClick={() => setAttachment(null)}>
+                <X className="w-4 h-4 text-red-500 text-xs" />
+              </Button>
+            )}
+          </div>
+        )}
+
         <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            className="p-2 rounded-md"
+            onClick={() => inputRef.current?.click()}
+          >
+            <PaperclipIcon className="w-8 h-8" />
+          </Button>
           <Input
             placeholder="Type a message..."
             value={text}
@@ -154,6 +208,14 @@ export default function Chat({
           </Button>
         </div>
       </div>
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => e.target.files && handleFileAttach(e.target.files[0])}
+      />
     </>
   );
 }
@@ -165,22 +227,61 @@ interface MessageBubbleProps {
 
 export function MessageBubble({ message, profile }: MessageBubbleProps) {
   const isSender = message.senderId === profile.id;
+  const attachment = message.attachments;
+  const isImage = attachment?.type?.startsWith("image");
 
   return (
-    <div className={`flex ${isSender ? "justify-end" : "justify-start"}`}>
+    <div
+      className={`flex ${isSender ? "justify-end" : "justify-start"} w-full`}
+    >
       <div
-        className={`max-w-xs rounded-2xl px-4 py-2 mb-3 ${
-          isSender
-            ? "bg-[#4d32fb] text-white dark:bg-[#4d32fb] dark:text-white"
-            : "bg-card dark:bg-white/10 border border-border dark:border-white/20 text-foreground dark:text-white"
-        }`}
-      >
-        <p className="text-sm">{message.content}</p>
-        <p
-          className={`mt-1 text-xs ${
+        className={`
+          max-w-[70%] rounded-2xl px-4 py-3 mb-3 space-y-2
+          ${
             isSender
-              ? "opacity-80 dark:opacity-80"
-              : "opacity-70 dark:opacity-60"
+              ? "bg-[#4d32fb] text-white"
+              : "bg-card border border-border dark:bg-white/10 dark:border-white/20 text-foreground dark:text-white"
+          }
+        `}
+      >
+        {attachment && (
+          <>
+            {isImage ? (
+              <img
+                src={attachment.url}
+                alt={attachment.name}
+                className="rounded-lg max-h-48 w-full object-cover"
+              />
+            ) : (
+              <a
+                href={attachment.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`
+                  flex items-center gap-2 rounded-lg px-3 py-2 text-sm max-w-full
+                  ${
+                    isSender
+                      ? "bg-white/20 text-white hover:bg-white/30"
+                      : "bg-muted text-foreground dark:bg-white/15 dark:text-white hover:bg-white/25"
+                  }
+                `}
+              >
+                📎{" "}
+                <span className="truncate max-w-[150px]">
+                  {attachment.name}
+                </span>
+              </a>
+            )}
+          </>
+        )}
+
+        {message.content && (
+          <p className="text-sm break-words">{message.content}</p>
+        )}
+
+        <p
+          className={`text-xs text-right ${
+            isSender ? "opacity-80" : "opacity-70 dark:opacity-60"
           }`}
         >
           {new Date(message.createdAt).toLocaleTimeString([], {
